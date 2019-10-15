@@ -1,6 +1,6 @@
 class TicTacToe {
     constructor() {
-        this.field = Array(3).fill(null).map(e => e = Array(3).fill(null));
+        this.square3X3 = [ [ null, null, null ], [ null, null, null ], [ null, null, null ] ];
         this.currentPlayer = "x";
         this.winner = null;
     }
@@ -9,25 +9,46 @@ class TicTacToe {
         return this.currentPlayer;
     }
 
-    nextTurn(rowIndex, columnIndex) {
-        if (this.field[columnIndex][rowIndex] != null) return;
-        this.field[columnIndex][rowIndex] = this.currentPlayer;
-        this.currentPlayer = (this.currentPlayer === "x") ? this.currentPlayer = "o" : this.currentPlayer = "x";
+    nextTurn(rowIndex, columnIndex) { 
+        if (this.square3X3[columnIndex][rowIndex] === null) {
+            this.square3X3[columnIndex][rowIndex] = this.currentPlayer;
+            
+            if (this.currentPlayer === "x") {
+                this.currentPlayer = "o";
+            } else {
+                this.currentPlayer = "x";
+            }
+    
+            this.checkWinner();
 
-        this.checkWinner();
+        } else {
+            return null;
+        }
     }
 
     isFinished() {
-        return ((this.winner != null) || (this.isDraw() === true)) ? true : false;
+        if ((this.winner !== null) || (this.isDraw() === true)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getWinner() {
-        return (this.winner != null) ? this.winner : null;
+        if (this.winner !== null) {
+            return this.winner;
+        } else {
+            return null;
+        }
     }
 
     checkWinner() {
         function checkCombination (string) {
-        return (string.match(/[x]{3}|[o]{3}/)) ? string[0] : null;
+            if (string.match(/[x]{3}|[o]{3}/)) {
+                return string[0];
+            } else {
+                return null;
+            }
         }
 
         function getVerticalWinner(array, winner) {
@@ -35,9 +56,9 @@ class TicTacToe {
             for (let y = 0; y < array.length; y++){
                 combination = array[y].join("");
                 winner = checkCombination(combination);
-                if (winner != null) {
-                break;
-                }    
+                if (winner !== null) {
+                    break;
+                }
             }
             return winner;
           }
@@ -49,7 +70,7 @@ class TicTacToe {
                         combination.push(array[x][y]);
                     }
                 winner = checkCombination(combination.join(""));
-                    if (winner != null) {
+                    if (winner !== null) {
                         break;
                     }
             }
@@ -77,27 +98,38 @@ class TicTacToe {
             winner = checkCombination(combination.join(""));
             return winner;
         }
-        if (!this.winner) this.winner = getVerticalWinner(this.field, this.winner);
-        if (!this.winner) this.winner = getHorizontalWinner(this.field, this.winner);
-        if (!this.winner) this.winner = getDiagonalOneWinner(this.field, this.winner);
-        if (!this.winner) this.winner = getDiagonalTwoWinner(this.field, this.winner);
-        }
+
+        if (!this.winner) this.winner = getVerticalWinner(this.square3X3, this.winner);
+        if (!this.winner) this.winner = getHorizontalWinner(this.square3X3, this.winner);
+        if (!this.winner) this.winner = getDiagonalOneWinner(this.square3X3, this.winner);
+        if (!this.winner) this.winner = getDiagonalTwoWinner(this.square3X3, this.winner);
+    }
 
     noMoreTurns() {
-        let isFull;
-        for (let i = 0; i < this.field.length; i++){
-            isFull = (this.field[i].indexOf(null) != -1) ? false : true;
-        if (isFull === false) break;
+        let fullSquare = false;
+        for (let i = 0; i < this.square3X3.length; i++){
+            fullSquare = this.square3X3[i].indexOf(null);
+
+            if (fullSquare !== -1) {
+                fullSquare = false;
+                break;
+            } else {
+                fullSquare = true;
+            }
         }
-        return isFull;
+        return fullSquare;
     }
 
     isDraw() {
-        return ((this.noMoreTurns() === true) && (this.winner === null)) ? true : false;
+        if ((this.noMoreTurns() === true) && (this.winner === null)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getFieldValue(rowIndex, colIndex) {
-        return this.field[colIndex][rowIndex];
+        return this.square3X3[colIndex][rowIndex];
     }
 }
 
